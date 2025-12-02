@@ -1,0 +1,119 @@
+<html>
+
+<head>
+    <link rel="stylesheet" href="style.css">
+    <title>Life Squares</title>
+</head>
+
+<body>
+    <section class="container-md">
+        <h1 style="margin-bottom: 5px;">78 years, 4070 weeks, 28490 days</h1>
+        <p style="margin-bottom: 10px; margin-top: 0;">each square is a week.</p>
+        <input type="date" id="birthdate" onchange="onSelect()" />
+    </section>
+    <section id="age-visualization">
+    </section>
+    <h1 id="counter"></h1>
+</body>
+<script>
+    function onSelect() {
+        const birthdate = document.getElementById("birthdate").value;
+        console.log(birthdate);
+        const mainContainer = document.querySelector(".container-md");
+        if (mainContainer) mainContainer.classList.add("fade");
+        const age = calculateAge(birthdate);
+        console.log(age);
+        const weekSize = calculateWeekSize();
+        document.documentElement.style.setProperty('--week-size', `${weekSize}px`);
+
+        setTimeout(() => drawAge(age), 1000);
+    }
+
+function calculateWeekSize(totalWeeks = 4070, gap = 5) {
+  const viewportWidth = window.innerWidth;
+  const viewportHeight = window.innerHeight;
+
+  // estimate columns based on aspect ratio
+  const cols = Math.ceil(Math.sqrt(totalWeeks * viewportWidth / viewportHeight));
+  const rows = Math.ceil(totalWeeks / cols);
+
+  const boxWidth = (viewportWidth - (cols - 1) * gap) / cols;
+  const boxHeight = (viewportHeight - (rows - 1) * gap) / rows;
+
+  return Math.floor(Math.min(boxWidth, boxHeight));
+}
+
+    function calculateAge(birthdate) {
+        const birth = new Date(birthdate);
+        const now = new Date();
+
+        if (isNaN(birth.getTime())) {
+            return {
+                years: 0,
+                weeks: 0,
+                days: 0
+            };
+        }
+
+        // total days and weeks lived
+        const totalDays = Math.floor((now - birth) / (1000 * 60 * 60 * 24));
+        const totalWeeks = Math.floor(totalDays / 7);
+
+        // compute full years
+        let years = now.getFullYear() - birth.getFullYear();
+        const hasHadBirthdayThisYear =
+            (now.getMonth() > birth.getMonth()) ||
+            (now.getMonth() === birth.getMonth() && now.getDate() >= birth.getDate());
+        if (!hasHadBirthdayThisYear) {
+            years--;
+        }
+
+        return {
+            years: years,
+            weeks: totalWeeks,
+            days: totalDays
+        };
+    }
+
+    function drawAge(age) {
+        const ageVisualization = document.getElementById("age-visualization");
+        const counter = document.getElementById("counter");
+        for (let week = 0; week <= 4070; week++) {
+            const weekElement = document.createElement("div");
+            weekElement.classList.add("week");
+
+            if (week < age.weeks) {
+                weekElement.classList.add("filled");
+            }
+
+            setTimeout(() => {
+                ageVisualization.appendChild(weekElement)
+                ageVisualization.scrollTop = ageVisualization.scrollHeight;
+                counter.innerText = `weeks: ${week}`;
+            }, getTimeoutDelay(week) * week);
+            
+        }       
+    }
+
+
+function getTimeoutDelay(week) {
+    if (week < 936) {
+        // slope 1 (gentle)
+        return (week / 936) * 3; // grows from 0 -> 3
+    } else if (week < 2080) {
+        // slope 2 (steeper)
+        return 3 + ((week - 936) / (2080 - 936)) * 4; // grows from 3 → ~7
+    } else if (week < 3120) {
+        // slope 3 (steepest)
+        return 7 + ((week - 2080) / (3120 - 2080)) * 3; // grows from 7 → ~10
+    } else {
+        // after 60, keep growing or clamp
+        return 10 + ((week - 3120) / (4070 - 3120)) * 5; // grows from 10 → ~15
+    }
+}
+
+
+
+</script>
+
+</html>

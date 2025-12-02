@@ -1,0 +1,69 @@
+body {
+  font-family: sans-serif;
+  overflow-y: hidden;
+}
+
+body::-webkit-scrollbar {
+  display: none;
+}
+
+@keyframes growBox {
+    from {
+        transform: scale(0);
+    }
+    to {
+        transform: scale(1);
+    }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+
+#age-visualization {
+  display: flex;
+  flex-wrap: wrap;
+  width: 99vw;
+  gap: 5px;
+  /* center */
+
+}
+
+.week {
+  width: var(--week-size);
+  height: var(--week-size);
+  background: rgb(222, 221, 221);
+  transform-origin: center;
+  animation: growBox .1s ease-in forwards;
+}
+
+.filled {
+    background: black;
+}
+
+
+
+#counter {
+  position: fixed;
+  top: 40%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: none;
+}
+
+.container-md {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.fade {
+  animation: fadeOut .5s ease-in forwards; /* forwards keeps final opacity */
+}
